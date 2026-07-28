@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Docker Build
 
 on:
   push:
@@ -7,27 +7,12 @@ on:
 
 jobs:
   docker:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Login to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: registry.ghaymah.systems
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-
       - name: Build Docker Image
         run: |
-          docker build \
-          -t registry.ghaymah.systems/${{ secrets.REGISTRY_USERNAME }}/ghaymah-sre-api:latest .
-
-      - name: Push Docker Image
-        run: |
-          docker push \
-          registry.ghaymah.systems/${{ secrets.REGISTRY_USERNAME }}/ghaymah-sre-api:latest
+          docker build -t ghaymah-sre-api:latest .
