@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Mithal Monitoring Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+
+font-family:Arial;
+
+background:#f4f4f4;
+
+text-align:center;
+
+}
+
+.card{
+
+background:white;
+
+padding:20px;
+
+margin:20px auto;
+
+width:90%;
+
+max-width:900px;
+
+border-radius:10px;
+
+box-shadow:0 0 10px rgba(0,0,0,.15);
+
+}
+
+table{
+
+width:100%;
+
+border-collapse:collapse;
+
+}
+
+th,td{
+
+border:1px solid #ddd;
+
+padding:10px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Mithal Monitoring Dashboard</h1>
+
+<div class="card">
+
+<h2>Uptime (24 Hours)</h2>
+
+<p id="uptime">Loading...</p>
+
+</div>
+
+<div class="card">
+
+<h2>SSL Certificate</h2>
+
+<p id="ssl">Loading...</p>
+
+</div>
+
+<div class="card">
+
+<h2>Latency (Last Hour)</h2>
+
+<canvas id="chart"></canvas>
+
+</div>
+
+<div class="card">
+
+<h2>Last 10 Checks</h2>
+
+<table id="table"></table>
+
+</div>
+
+<script>
+
+fetch("metrics.csv")
+
+.then(r=>r.text())
+
+.then(text=>{
+
+let rows=text.trim().split("\n").slice(1);
+
+let labels=[];
+
+let latency=[];
+
+let success=0;
+
+let ssl=0;
+
+let table="<tr><th>Time</th><th>Status</th><th>Latency</th></tr>";
+
+rows.forEach(row=>{
+
+let c=row.split(",");
+
+labels.push(c[0]);
+
+latency.push(Number(c[1]));
+
+ssl=c[3];
+
+if(c[2]=="200") success++;
+
+});
+
+document.getElementById("uptime").innerHTML=
+((success/rows.length)*100).toFixed(2)+" %";
+
+document.getElementById("ssl").innerHTML=
+ssl+" days remaining";
+
+rows.slice(-10).forEach(row=>{
+
+let c=row.split(",");
+
+table+=`<tr>
+<td>${c[0]}</td>
+<td>${c[2]}</td>
+<td>${c[1]} ms</td>
+</tr>`;
+
+});
+
+document.getElementById("table").innerHTML=table;
+
+new Chart(document.getElementById("chart"),{
+
+type:"line",
+
+data:{
+
+labels:labels.slice(-60),
+
+datasets:[{
+
+label:"Latency (ms)",
+
+data:latency.slice(-60)
+
+}]
+
+}
+
+});
+
+});
+
+</script>
+
+</body>
+
+</html>

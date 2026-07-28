@@ -1,0 +1,2 @@
+timestamp,latency_ms,status_code,ssl_days_left,dns_ms,search_ms
+2026-07-28 21:48:04,1089.54,200,48,3.73,9141.39
